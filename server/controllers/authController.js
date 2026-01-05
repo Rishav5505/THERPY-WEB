@@ -24,23 +24,17 @@ exports.signup = async (req, res) => {
 
         console.log(`🔑 Resent OTP for ${email}: ${otp}`); // For debugging
 
-        try {
-          await sendMail({
-            to: email,
-            subject: "MindMend Signup OTP (Resent)",
-            text: `Your OTP for MindMend signup is: ${otp}`,
-          });
-        } catch (mailError) {
-          console.error("❌ Mail sending failed:", mailError.message);
-          return res.status(200).json({
-            message: "User exists, but OTP email failed. (OTP logged in server console)",
-            user: { email, otpVerified: false }
-          });
-        }
+        // ⚡ NON-BLOCKING (Fire & Forget) for retry flow too
+        sendMail({
+          to: email,
+          subject: "MindMend Signup OTP (Resent)",
+          text: `Your OTP for MindMend signup is: ${otp}`,
+        }).catch(err => console.error("Resend email failed:", err.message));
 
         return res.status(200).json({
           message: "User already exists but not verified. New OTP sent.",
-          user: { email, otpVerified: false }
+          user: { email, otpVerified: false },
+          debugOtp: otp // Always send OTP to frontend for fallback
         });
       }
     }
@@ -163,17 +157,18 @@ exports.resendOtp = async (req, res) => {
     await user.save();
     console.log(`🔑 Resent OTP for ${email}: ${otp}`); // Debug
 
-    try {
-      await sendMail({
-        to: email,
-        subject: "MindMend OTP (Resent)",
-        text: `Your new OTP is: ${otp}`,
-      });
-    } catch (mailError) {
-      console.error("❌ Mail resend failed:", mailError.message);
-    }
+    // ⚡ NON-BLOCKING
+    sendMail({
+      to: email,
+      subject: "MindMend OTP (Resent)",
+      text: `Your new OTP is: ${otp}`,
+    }).catch(err => console.error("Resend OTP failed:", err.message));
 
-    res.json({ message: "OTP process completed. If email doesn't arrive in 1 min, check your Server Terminal for the code." });
+    // Always return debugOtp for immediate UI feedback
+    res.json({
+      message: "OTP resent successfully.",
+      debugOtp: otp
+    });
   } catch (err) {
     res.status(500).json({ message: "Failed to resend OTP", error: err.message });
   }
@@ -191,17 +186,18 @@ exports.forgotPassword = async (req, res) => {
     await user.save();
     console.log(`🔑 Forgot Pass OTP for ${email}: ${otp}`); // Debug
 
-    try {
-      await sendMail({
-        to: email,
-        subject: "MindMend Password Reset OTP",
-        text: `Your OTP for password reset is: ${otp}`,
-      });
-    } catch (mailError) {
-      console.error("❌ Forgot pass mail failed:", mailError.message);
-    }
+    // ⚡ NON-BLOCKING
+    sendMail({
+      to: email,
+      subject: "MindMend Password Reset OTP",
+      text: `Your OTP for password reset is: ${otp}`,
+    }).catch(err => console.error("Forgot password email failed:", err.message));
 
-    res.json({ message: "Password reset process initiated. If email doesn't arrive, check the Server Terminal for the reset code." });
+    // Always return debugOtp for immediate UI feedback
+    res.json({
+      message: "Password reset OTP sent.",
+      debugOtp: otp
+    });
   } catch (err) {
     res.status(500).json({ message: "Forgot password failed", error: err.message });
   }

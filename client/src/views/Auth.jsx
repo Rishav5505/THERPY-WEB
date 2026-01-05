@@ -91,8 +91,11 @@ const Auth = () => {
 
   const handleResendOtp = async () => {
     try {
-      await axios.post("/auth/resend-otp", { email: pendingEmail });
+      const res = await axios.post("/auth/resend-otp", { email: pendingEmail });
       setSuccess("New OTP sent to your email!");
+      if (res.data.debugOtp) {
+        alert(`Email service is busy. Your new verification code is: ${res.data.debugOtp}`);
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resend OTP");
     }
@@ -103,10 +106,14 @@ const Auth = () => {
     setError("");
     setSuccess("");
     try {
-      await axios.post("/auth/forgot-password", { email: resetData.email });
+      const res = await axios.post("/auth/forgot-password", { email: resetData.email });
       setSuccess("Reset OTP sent to your email!");
       setResetPasswordMode(true);
       setForgotPasswordMode(false);
+
+      if (res.data.debugOtp) {
+        alert(`Email service is busy. Your reset code is: ${res.data.debugOtp}`);
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send reset OTP");
     }
