@@ -43,14 +43,14 @@ const Navbar = ({ theme, setTheme }) => {
           <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg md:rounded-xl flex items-center justify-center text-white text-lg md:text-xl font-black shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
             M
           </div>
-          <span className="text-xl md:text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 hidden sm:block">
+          <span className="text-xl md:text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
             MindMend
           </span>
         </Link>
 
         <div className="flex items-center gap-3 md:gap-8">
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-6">
+          {/* Desktop Links - Always visible */}
+          <div className="flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
@@ -65,7 +65,7 @@ const Navbar = ({ theme, setTheme }) => {
             ))}
           </div>
 
-          <div className="hidden md:block h-4 w-[1px] bg-slate-200 dark:bg-slate-800 mx-2" />
+          <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-800 mx-2" />
 
           <div className="flex items-center gap-2 md:gap-4">
             {user && <NotificationBell />}
@@ -95,8 +95,8 @@ const Navbar = ({ theme, setTheme }) => {
                       user.name?.charAt(0) || "U"
                     )}
                   </div>
-                  <span className="text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest hidden md:block">{user.name?.split(' ')[0]}</span>
-                  <span className={`text-[10px] transition-transform hidden md:block ${showUserMenu ? 'rotate-180' : ''}`}>▼</span>
+                  <span className="text-xs font-black text-slate-700 dark:text-slate-200 uppercase tracking-widest">{user.name?.split(' ')[0]}</span>
+                  <span className={`text-[10px] transition-transform ${showUserMenu ? 'rotate-180' : ''}`}>▼</span>
                 </button>
                 {/* ... User Menu AnimatePresence remains same ... */}
 

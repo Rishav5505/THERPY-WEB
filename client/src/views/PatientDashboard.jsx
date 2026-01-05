@@ -21,11 +21,11 @@ const PatientDashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-[#080b14]">
-      {/* Sidebar - Desktop Only */}
+      {/* Sidebar - Always visible as it is in desktop */}
       <motion.aside
         initial={{ x: -250 }}
         animate={{ x: 0 }}
-        className="hidden lg:block w-72 bg-white dark:bg-slate-900 shadow-2xl z-40 fixed h-full p-6 border-r border-slate-100 dark:border-slate-800"
+        className="w-72 bg-white dark:bg-slate-900 shadow-2xl z-40 fixed h-full p-6 border-r border-slate-100 dark:border-slate-800"
       >
         <div className="mb-10 mt-10">
           <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Patient Hub</h2>
@@ -51,8 +51,8 @@ const PatientDashboard = () => {
         </nav>
       </motion.aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 lg:ml-72 p-4 md:p-10 mb-20 lg:mb-0 mt-20">
+      {/* Main Content Area - Always has sidebar margin */}
+      <main className="flex-1 ml-72 p-10 mt-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -66,23 +66,7 @@ const PatientDashboard = () => {
         </AnimatePresence>
       </main>
 
-      {/* Bottom Navigation - Mobile Only */}
-      <nav className="lg:hidden fixed bottom-6 left-4 right-4 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/50 dark:border-slate-800/50 z-[100] flex items-center justify-around px-2">
-        {menuItems.slice(0, 5).map((item) => (
-          <Link key={item.path} to={item.path} className="relative flex flex-col items-center justify-center w-full h-full">
-            <motion.div
-              whileTap={{ scale: 0.8 }}
-              className={`p-2 rounded-xl flex flex-col items-center gap-0.5 ${location.pathname === item.path ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'}`}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-[10px] font-black uppercase tracking-tighter">{item.name.split(' ')[0]}</span>
-              {location.pathname === item.path && (
-                <motion.div layoutId="nav-glow" className="absolute inset-0 bg-indigo-500/10 dark:bg-indigo-400/10 blur-xl rounded-full -z-10" />
-              )}
-            </motion.div>
-          </Link>
-        ))}
-      </nav>
+      {/* Mobile Bottom Navigation Removed to match desktop exactly */}
     </div>
   );
 };

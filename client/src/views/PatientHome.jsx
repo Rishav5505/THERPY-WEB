@@ -121,11 +121,11 @@ const PatientHome = () => {
     return (
         <div className="space-y-10 relative">
             {/* Top Section: Welcome & Daily Quote */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-3 gap-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="lg:col-span-2 bg-gradient-to-br from-indigo-900 to-slate-900 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col justify-center"
+                    className="col-span-2 bg-gradient-to-br from-indigo-900 to-slate-900 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col justify-center"
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32" />
                     <h1 className="text-4xl font-black text-white tracking-tight mb-4 relative z-10">
@@ -145,7 +145,7 @@ const PatientHome = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-xl flex flex-col justify-center text-center"
+                    className="col-span-1 bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-xl flex flex-col justify-center text-center"
                 >
                     <div className="text-4xl mb-4 text-emerald-500">🌿</div>
                     <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Daily Affirmation</h3>
@@ -168,7 +168,7 @@ const PatientHome = () => {
                 </div>
 
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-3 gap-6">
                         <Skeleton className="h-64" repeat={3} />
                     </div>
                 ) : bookings.length === 0 ? (
@@ -176,7 +176,7 @@ const PatientHome = () => {
                         <p className="text-slate-500 font-medium">No appointments yet. Start your journey today!</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-3 gap-6">
                         {bookings.map((booking, idx) => (
                             <motion.div
                                 key={booking._id}
@@ -262,7 +262,7 @@ const PatientHome = () => {
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-4 gap-6">
                 {stats.map((stat, i) => (
                     <motion.div
                         key={i}
@@ -310,7 +310,7 @@ const PatientHome = () => {
                 </div>
 
                 {/* Badges Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
                     {[
                         { icon: "🎯", label: "First Session", unlocked: true, color: "from-blue-400 to-cyan-400" },
                         { icon: "🔥", label: "7-Day Streak", unlocked: true, color: "from-orange-400 to-red-400" },
@@ -366,7 +366,7 @@ const PatientHome = () => {
                     {loading ? (
                         <Skeleton className="h-16" repeat={3} />
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             {forumMessages.length > 0 ? (
                                 forumMessages.map((msg, i) => (
                                     <motion.div
@@ -396,7 +396,7 @@ const PatientHome = () => {
                     <div className="h-[2px] flex-1 mx-6 bg-slate-100 dark:bg-slate-800" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 gap-6">
                     {cards.map((card, idx) => (
                         <motion.div
                             key={idx}
