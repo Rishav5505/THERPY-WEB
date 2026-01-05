@@ -62,9 +62,9 @@ const Auth = () => {
         setOtpMode(true);
         setPendingEmail(form.email);
 
-        // Fallback for failed email delivery
+        // For developer eyes only - no more annoying alerts!
         if (res.data.debugOtp) {
-          alert(`Email service is busy. Your verification code is: ${res.data.debugOtp}`);
+          console.log(`🔑 Debug OTP: ${res.data.debugOtp}`);
         }
       }
     } catch (err) {
@@ -94,7 +94,7 @@ const Auth = () => {
       const res = await axios.post("/auth/resend-otp", { email: pendingEmail });
       setSuccess("New OTP sent to your email!");
       if (res.data.debugOtp) {
-        alert(`Email service is busy. Your new verification code is: ${res.data.debugOtp}`);
+        console.log(`🔑 Resent Debug OTP: ${res.data.debugOtp}`);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resend OTP");
@@ -112,7 +112,7 @@ const Auth = () => {
       setForgotPasswordMode(false);
 
       if (res.data.debugOtp) {
-        alert(`Email service is busy. Your reset code is: ${res.data.debugOtp}`);
+        console.log(`🔑 Forgot Password Debug OTP: ${res.data.debugOtp}`);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send reset OTP");
