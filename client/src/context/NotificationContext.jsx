@@ -29,7 +29,7 @@ export const NotificationProvider = ({ children }) => {
         fetchNotifications();
         requestNotificationPermission();
 
-        const newSocket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000');
+        const newSocket = io(import.meta.env.VITE_SOCKET_URL || 'https://therpy-web.onrender.com');
         setSocket(newSocket);
 
         newSocket.on('connect', () => {

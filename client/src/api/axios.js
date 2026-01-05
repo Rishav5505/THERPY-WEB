@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://mind-mend-final-backend.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://therpy-web.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },

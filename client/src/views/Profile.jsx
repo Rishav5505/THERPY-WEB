@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { motion } from "framer-motion";
 
-const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+const socketUrl = import.meta.env.VITE_SOCKET_URL || "https://therpy-web.onrender.com";
 
 export default function Profile() {
     const [user, setUser] = useState(null);

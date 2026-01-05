@@ -31,11 +31,11 @@ const Chat = () => {
         medications: [{ name: '', dosage: '', frequency: '', duration: '', instructions: '' }]
     });
 
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://therpy-web.onrender.com/api';
 
     useEffect(() => {
         // Initialize Socket.IO
-        const newSocket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000');
+        const newSocket = io(import.meta.env.VITE_SOCKET_URL || 'https://therpy-web.onrender.com');
         setSocket(newSocket);
 
         // Fetch initial data
@@ -303,8 +303,8 @@ const Chat = () => {
                     {/* Message Bubble */}
                     <div
                         className={`relative p-4 rounded-2xl shadow-lg ${isMe
-                                ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-sm'
-                                : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-bl-sm border border-slate-100 dark:border-slate-700'
+                            ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-sm'
+                            : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-bl-sm border border-slate-100 dark:border-slate-700'
                             }`}
                     >
                         {/* Text Message */}
@@ -364,8 +364,8 @@ const Chat = () => {
                                 <button
                                     onClick={() => setShowPrescriptionView(msg.prescription)}
                                     className={`w-full py-2 px-4 rounded-lg text-sm font-semibold transition-all ${isMe
-                                            ? 'bg-white/20 hover:bg-white/30 text-white'
-                                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                                        ? 'bg-white/20 hover:bg-white/30 text-white'
+                                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                                         }`}
                                 >
                                     View Full Prescription
@@ -448,8 +448,8 @@ const Chat = () => {
                                     whileTap={{ scale: 0.98 }}
                                     onClick={() => handleSelectChat(conv)}
                                     className={`p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-all ${activeChat?._id === conv._id
-                                            ? 'bg-indigo-50 dark:bg-indigo-900/30 border-l-4 border-l-indigo-600'
-                                            : ''
+                                        ? 'bg-indigo-50 dark:bg-indigo-900/30 border-l-4 border-l-indigo-600'
+                                        : ''
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
@@ -593,8 +593,8 @@ const Chat = () => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     className={`p-4 rounded-2xl font-bold transition-all shadow-lg ${isSending || !newMessage.trim()
-                                            ? 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-xl'
+                                        ? 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-xl'
                                         }`}
                                 >
                                     {isSending ? (

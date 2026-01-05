@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
-const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5000");
+const socket = io(import.meta.env.VITE_SOCKET_URL || "https://therpy-web.onrender.com");
 
 const Forum = () => {
   const [message, setMessage] = useState("");
