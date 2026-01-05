@@ -161,10 +161,17 @@ io.on("connection", (socket) => {
   });
 });
 
+// 🛑 STRICT DATABASE CHECK
+if (!process.env.MONGO_URI) {
+  console.error("❌ FATAL ERROR: MONGO_URI is not defined.");
+  console.error("Please set MONGO_URI in your .env file or Render Environment Variables.");
+  process.exit(1); // Stop server if no DB
+}
+
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/mindmend", {
-    serverSelectionTimeoutMS: 5000, // 5s timeout for initial connection
-    socketTimeoutMS: 45000, // 45s for queries
+  .connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
   })
   .then(() => {
     console.log("✅ MongoDB connected");
