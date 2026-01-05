@@ -47,25 +47,26 @@ exports.signup = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword, role, otp, otpVerified: false });
     await newUser.save();
 
-    // ⚡ NON-BLOCKING EMAIL SEND (Fire and Forget) to prevent UI hang
-    // We start the email process but don't wait for it to finish before responding
-    // This solves the render timeout issue immediately.
-    sendMail({
-      to: email,
-      subject: "Your MindMend Verification Code",
-      text: `Welcome to MindMend! Your verification code is: ${otp}. This code will expire in 10 minutes. Please enter this code to complete your registration.`,
-      otp: otp,
-    }).catch(err => console.error("Email send failed in background:", err.message));
-
-    // Assume sent or failed, we return immediately.
-    // We ALWAYS send debugOtp to frontend now so user is not stuck.
-    const emailSent = false; // Force frontend to show fallback alert
-
+    // Try to send email and wait for result
+    let emailSent = false;
+    try {
+      await sendMail({
+        to: email,
+        subject: "Your MindMend Verification Code",
+        text: `Welcome to MindMend! Your verification code is: ${otp}. This code will expire in 10 minutes. Please enter this code to complete your registration.`,
+        otp: otp,
+      });
+      emailSent = true;
+      console.log(`✅ Email sent successfully to ${email}`);
+    } catch (err) {
+      console.error("❌ Email send failed:", err.message);
+      emailSent = false;
+    }
 
     res.status(201).json({
       message: emailSent
         ? "User created! OTP sent to your email."
-        : `User created! Email failed. Your OTP is: ${otp}`,
+        : `Email service is busy. Your verification code is: ${otp}`,
       user: {
         _id: newUser._id,
         name: newUser.name,
