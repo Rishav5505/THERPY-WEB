@@ -162,7 +162,10 @@ io.on("connection", (socket) => {
 });
 
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/mindmend")
+  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/mindmend", {
+    serverSelectionTimeoutMS: 5000, // 5s timeout for initial connection
+    socketTimeoutMS: 45000, // 45s for queries
+  })
   .then(() => {
     console.log("✅ MongoDB connected");
     server.listen(PORT, () => {

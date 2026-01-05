@@ -6,6 +6,7 @@ const instance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000, // 15 seconds timeout
 });
 
 // ✅ Automatically add JWT token to every request
