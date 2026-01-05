@@ -52,6 +52,7 @@ exports.signup = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword, role, otp, otpVerified: false });
     await newUser.save();
 
+    let emailSent = true;
     try {
       await sendMail({
         to: email,
@@ -60,10 +61,13 @@ exports.signup = async (req, res) => {
       });
     } catch (mailError) {
       console.error("❌ Mail sending failed:", mailError.message);
+      emailSent = false;
     }
 
     res.status(201).json({
-      message: "User created! (Note: Email service is hitting Google limits. Please check your VS Code Terminal for the 6-digit OTP to verify your account).",
+      message: emailSent
+        ? "User created! OTP sent to your email."
+        : `User created! Email failed. Your OTP is: ${otp}`,
       user: {
         _id: newUser._id,
         name: newUser.name,
@@ -71,6 +75,7 @@ exports.signup = async (req, res) => {
         role: newUser.role,
         otpVerified: false,
       },
+      debugOtp: emailSent ? undefined : otp // Only send OTP to frontend if email failed
     });
   } catch (err) {
     res.status(500).json({ message: "Signup failed", error: err.message });

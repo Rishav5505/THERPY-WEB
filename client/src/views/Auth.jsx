@@ -27,17 +27,21 @@ const Auth = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError("");
     setSuccess("");
+    setLoading(true);
     try {
       let res;
       if (isLogin) {
         res = await axios.post("/auth/login", {
           email: form.email,
           password: form.password,
-          role: form.role // Added role to login check if needed by backend or for UI logic
+          role: form.role
         });
         const user = res.data.user;
         const token = res.data.token;
@@ -57,9 +61,16 @@ const Auth = () => {
         setSuccess(res.data.message || "Account created! OTP sent to your email.");
         setOtpMode(true);
         setPendingEmail(form.email);
+
+        // Fallback for failed email delivery
+        if (res.data.debugOtp) {
+          alert(`Email service is busy. Your verification code is: ${res.data.debugOtp}`);
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Authentication failed");
+      setError(err.response?.data?.message || "Authentication failed. Server might be waking up.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -302,9 +313,10 @@ const Auth = () => {
 
             <button
               type="submit"
-              className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[1.5rem] font-black text-lg shadow-xl hover:scale-[1.02] transition-transform active:scale-95"
+              disabled={loading}
+              className={`w-full py-5 rounded-[1.5rem] font-black text-lg shadow-xl hover:scale-[1.02] transition-transform active:scale-95 ${loading ? 'bg-slate-400 cursor-not-allowed' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'}`}
             >
-              {isLogin ? "Unlock Dashboard" : "Create Account"}
+              {loading ? "Processing..." : (isLogin ? "Unlock Dashboard" : "Create Account")}
             </button>
           </form>
         )}
