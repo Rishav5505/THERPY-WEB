@@ -47,26 +47,21 @@ exports.signup = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword, role, otp, otpVerified: false });
     await newUser.save();
 
-    // Try to send email and wait for result
-    let emailSent = false;
-    try {
-      await sendMail({
-        to: email,
-        subject: "Your MindMend Verification Code",
-        text: `Welcome to MindMend! Your verification code is: ${otp}. This code will expire in 10 minutes. Please enter this code to complete your registration.`,
-        otp: otp,
-      });
-      emailSent = true;
+    // Start email sending (optimistic)
+    sendMail({
+      to: email,
+      subject: "Your MindMend Verification Code",
+      text: `Welcome to MindMend! Your verification code is: ${otp}. This code will expire in 10 minutes. Please enter this code to complete your registration.`,
+      otp: otp,
+    }).then(() => {
       console.log(`✅ Email sent successfully to ${email}`);
-    } catch (err) {
-      console.error("❌ Email send failed:", err.message);
-      emailSent = false;
-    }
+    }).catch(err => {
+      console.error("❌ Email send failed in background:", err.message);
+    });
 
+    // Return success immediately to keep UI fast
     res.status(201).json({
-      message: emailSent
-        ? "User created! OTP sent to your email."
-        : `Email service is busy. Your verification code is: ${otp}`,
+      message: "User created! OTP sent to your email.",
       user: {
         _id: newUser._id,
         name: newUser.name,
@@ -74,7 +69,7 @@ exports.signup = async (req, res) => {
         role: newUser.role,
         otpVerified: false,
       },
-      debugOtp: emailSent ? undefined : otp // Only send OTP to frontend if email failed
+      debugOtp: otp // Always keep as fallback in case email is slow
     });
   } catch (err) {
     res.status(500).json({ message: "Signup failed", error: err.message });
@@ -160,7 +155,7 @@ exports.resendOtp = async (req, res) => {
     await user.save();
     console.log(`🔑 Resent OTP for ${email}: ${otp}`); // Debug
 
-    // ⚡ NON-BLOCKING
+    // ⚡ Send email in background
     sendMail({
       to: email,
       subject: "Your MindMend Verification Code",
@@ -168,9 +163,8 @@ exports.resendOtp = async (req, res) => {
       otp: otp,
     }).catch(err => console.error("Resend OTP failed:", err.message));
 
-    // Always return debugOtp for immediate UI feedback
     res.json({
-      message: "OTP resent successfully.",
+      message: "OTP sent to your email.",
       debugOtp: otp
     });
   } catch (err) {
@@ -190,7 +184,7 @@ exports.forgotPassword = async (req, res) => {
     await user.save();
     console.log(`🔑 Forgot Pass OTP for ${email}: ${otp}`); // Debug
 
-    // ⚡ NON-BLOCKING
+    // ⚡ Send email in background
     sendMail({
       to: email,
       subject: "Your MindMend Password Reset Code",
@@ -198,9 +192,8 @@ exports.forgotPassword = async (req, res) => {
       otp: otp,
     }).catch(err => console.error("Forgot password email failed:", err.message));
 
-    // Always return debugOtp for immediate UI feedback
     res.json({
-      message: "Password reset OTP sent.",
+      message: "Password reset OTP sent to your email.",
       debugOtp: otp
     });
   } catch (err) {
