@@ -1,97 +1,115 @@
-import { motion } from "framer-motion"; // For animations
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const navigate = useNavigate();
+
   return (
-    <div className="bg-gradient-to-r from-purple-100 via-blue-100 to-purple-200 py-12">
-      <div className="max-w-screen-xl mx-auto text-center px-6">
-        <motion.h2
-          className="text-4xl font-bold text-purple-700 mb-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          About MindMend
-        </motion.h2>
+    <div className="min-h-screen bg-white dark:bg-[#0b0f1a] pt-32 pb-20 overflow-hidden">
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -mr-48 -mt-20" />
 
-        <motion.p
-          className="text-lg text-gray-700 mb-10 px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-        >
-          MindMend is a modern platform designed to bridge the gap between individuals and mental health professionals. 
-          Our mission is to provide stigma-free, accessible mental wellness tools, including therapy bookings, 
-          AI-powered mood tracking, and community support — all in one place.
-        </motion.p>
-
-        {/* Features Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Secure Logins */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
           <motion.div
-            className="bg-white p-8 rounded-xl shadow-xl text-center transform transition-transform hover:scale-105 cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-            onClick={() => navigate("/auth")}
-            title="Go to Login/Signup"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
           >
-            <div className="bg-purple-100 p-4 rounded-full mb-4 inline-block">
-              <i className="fas fa-lock text-3xl text-purple-700"></i>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 dark:text-white mb-8">
+              We're on a <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">mission to heal.</span>
+            </h1>
+            <p className="text-xl text-slate-600 dark:text-slate-400 font-medium leading-relaxed mb-8">
+              MindMend started with a simple belief: mental wellness shouldn't be a luxury.
+              In a world that's faster and more connected than ever, we've focused on creating a
+              safe sanctuary for your mind.
+            </p>
+            <div className="flex items-center gap-6">
+              <div className="flex -space-x-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="w-12 h-12 rounded-full border-4 border-white dark:border-slate-900 bg-slate-200" />
+                ))}
+              </div>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+                Join <span className="text-indigo-600 dark:text-indigo-400">10,000+</span> users who <br />
+                found peace with MindMend.
+              </p>
             </div>
-            <h3 className="text-2xl font-semibold mb-3 text-purple-800">Secure Logins</h3>
-            <p className="text-gray-600">Separate dashboards for therapists and patients using JWT & OAuth.</p>
           </motion.div>
 
-          {/* Therapy Booking */}
           <motion.div
-            className="bg-white p-8 rounded-xl shadow-xl text-center transform transition-transform hover:scale-105 cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.7 }}
-            onClick={() => navigate("/patient/book")}
-            title="Book Therapy Session"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative"
           >
-            <div className="bg-blue-100 p-4 rounded-full mb-4 inline-block">
-              <i className="fas fa-calendar-check text-3xl text-blue-700"></i>
+            <div className="rounded-[3rem] overflow-hidden shadow-2xl rotate-3 h-[400px] w-full">
+              <img
+                src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Peaceful Yoga"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <h3 className="text-2xl font-semibold mb-3 text-blue-800">Therapy Booking</h3>
-            <p className="text-gray-600">Users can easily schedule and manage therapy sessions.</p>
-          </motion.div>
-
-          {/* Mood Tracking */}
-          <motion.div
-            className="bg-white p-8 rounded-xl shadow-xl text-center transform transition-transform hover:scale-105 cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.9 }}
-            onClick={() => navigate("/patient/mood")}
-            title="Track Your Mood"
-          >
-            <div className="bg-green-100 p-4 rounded-full mb-4 inline-block">
-              <i className="fas fa-chart-line text-3xl text-green-700"></i>
-            </div>
-            <h3 className="text-2xl font-semibold mb-3 text-green-800">Mood Tracking</h3>
-            <p className="text-gray-600">AI detects patterns and suggests wellness tips.</p>
-          </motion.div>
-
-          {/* Self-Help Library */}
-          <motion.div
-            className="bg-white p-8 rounded-xl shadow-xl text-center transform transition-transform hover:scale-105 cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2 }}
-            onClick={() => navigate("/patient/selfhelp")}
-            title="Open Self-Help Library"
-          >
-            <div className="bg-yellow-100 p-4 rounded-full mb-4 inline-block">
-              <i className="fas fa-book-open text-3xl text-yellow-700"></i>
-            </div>
-            <h3 className="text-2xl font-semibold mb-3 text-yellow-800">Self-Help Library</h3>
-            <p className="text-gray-600">Access curated videos, readings, and meditation exercises.</p>
           </motion.div>
         </div>
+
+        {/* Core Values */}
+        <div className="mb-32">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">Our Core Values</h2>
+            <p className="text-slate-500 dark:text-slate-400 font-medium italic">"The pillars that define every feature we build."</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { title: "Empathy First", icon: "❤️", desc: "Every interaction is handled with deep human understanding." },
+              { title: "Privacy Always", icon: "🔒", desc: "Your data is yours. We use medical-grade encryption." },
+              { title: "Science-Backed", icon: "🔬", desc: "Our tools are built on established psychological frameworks." },
+              { title: "Inclusive Care", icon: "🌍", desc: "Safe space for everyone, regardless of background." }
+            ].map((value, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 text-center"
+              >
+                <div className="text-4xl mb-6">{value.icon}</div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-4">{value.title}</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{value.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Join Us CTA */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          className="relative p-16 rounded-[3rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-center text-white overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+          <h2 className="text-4xl md:text-5xl font-black mb-8 relative z-10">Start your journey today.</h2>
+          <p className="text-xl text-indigo-100 max-w-2xl mx-auto mb-10 relative z-10 font-medium leading-relaxed">
+            Whether you're a patient seeking care or a therapist looking to help,
+            MindMend provides the perfect platform to make it happen.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+            <button
+              onClick={() => navigate("/auth")}
+              className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black hover:scale-105 transition-transform shadow-xl"
+            >
+              Sign Up Now
+            </button>
+            <button
+              onClick={() => navigate("/contact")}
+              className="px-10 py-4 bg-transparent border-2 border-white/30 hover:border-white text-white rounded-2xl font-black transition-all"
+            >
+              Contact Support
+            </button>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

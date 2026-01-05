@@ -1,30 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import LineChart from "./LineChart";
+import axios from "../api/axios";
 
 const moods = [
-  { mood: "Happy", emoji: "😊" },
-  { mood: "Sad", emoji: "😢" },
-  { mood: "Stressed", emoji: "😣" },
-  { mood: "Angry", emoji: "😠" },
-  { mood: "Relaxed", emoji: "😌" },
+  { mood: "Happy", emoji: "😊", color: "from-amber-400 to-orange-500", label: "Pure Joy" },
+  { mood: "Relaxed", emoji: "😌", color: "from-emerald-400 to-teal-600", label: "Calm Mind" },
+  { mood: "Stressed", emoji: "😣", color: "from-rose-400 to-red-600", label: "Higher Stress" },
+  { mood: "Sad", emoji: "😢", color: "from-blue-400 to-indigo-600", label: "Bit Blue" },
+  { mood: "Angry", emoji: "😠", color: "from-red-600 to-rose-900", label: "Intense Heat" },
 ];
 
-import { motion } from "framer-motion";
-import LineChart from "./LineChart";
-const moodTips = {
-  Happy: "Keep spreading positivity! Celebrate your wins today.",
-  Sad: "It's okay to feel sad. Take a deep breath and talk to someone you trust.",
-  Stressed: "Try a short meditation or a walk. You are stronger than your stress.",
-  Angry: "Pause and count to ten. Express your feelings calmly when you're ready.",
-  Relaxed: "Enjoy the peace. Maybe share your calm with someone else today!",
-};
-
 const aiSuggestions = {
-  Happy: "Share your happiness with a friend or write down what made you smile today.",
-  Sad: "Try listening to your favorite music or journaling your feelings.",
-  Stressed: "Try a guided meditation or deep breathing exercise. Take a short break from screens.",
-  Angry: "Go for a walk, or try a quick workout to release tension.",
-  Relaxed: "Consider a gratitude exercise or gentle stretching to maintain your calm.",
+  Happy: "Share your radiance! Write down three things you achieved today to amplify this feeling.",
+  Sad: "It's okay to be gentle with yourself. Grab a warm tea and listen to some soft ambient sounds.",
+  Stressed: "Time for a 4-7-8 breathing reset. Inhale for 4s, hold for 7s, exhale for 8s. Repeat 3 times.",
+  Angry: "Channel this energy. Try a high-intensity 5-minute movement or express your thoughts on paper.",
+  Relaxed: "Deepen this serenity. A focused 5-minute meditation will anchor this peace for the rest of your day.",
 };
 
 export default function MoodTracker() {
@@ -32,259 +25,184 @@ export default function MoodTracker() {
   const [note, setNote] = useState("");
   const [moodHistory, setMoodHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
-  const emoji = (m) => moods.find((e) => e.mood === m)?.emoji || "🙂";
 
   useEffect(() => {
-    if (!token) navigate("/login", { replace: true });
-  }, [token, navigate]);
-
-  useEffect(() => {
-    if (!token) return;
-    fetch("/api/moods", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then(setMoodHistory)
-      .catch((err) => console.error("History error:", err));
+    if (!token) navigate("/auth", { replace: true });
+    fetchHistory();
   }, [token]);
+
+  const fetchHistory = async () => {
+    try {
+      const res = await axios.get("/mood");
+      setMoodHistory(res.data);
+    } catch (err) {
+      console.error("History error:", err);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!selectedMood) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/moods", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ mood: selectedMood, note }),
-      });
-      if (!res.ok) throw new Error("Request failed");
-      const saved = await res.json();
-      setMoodHistory((prev) => [saved, ...prev]);
+      const res = await axios.post("/mood", { mood: selectedMood, note });
+      setMoodHistory((prev) => [res.data, ...prev]);
       setSelectedMood(null);
       setNote("");
     } catch (err) {
-      console.error(err);
-      alert("Could not save mood");
+      alert("Error: " + (err.response?.data?.message || "Failed to sync."));
     } finally {
       setLoading(false);
     }
   };
 
-  // Prepare chart data for last 7 days
   const chartData = (() => {
     if (!moodHistory.length) return null;
-    // Get last 7 days
     const days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
-      return d.toLocaleDateString();
+      return d.toLocaleDateString(undefined, { weekday: 'short' });
     });
-    // Map moods to numbers
     const moodMap = { Happy: 5, Relaxed: 4, Stressed: 3, Sad: 2, Angry: 1 };
-    // Aggregate moods by day
     const dayMoods = days.map((day) => {
-      const entry = moodHistory.find((e) => new Date(e.createdAt).toLocaleDateString() === day);
-      return entry ? moodMap[entry.mood] || 0 : null;
+      const entry = moodHistory.find((e) => new Date(e.createdAt).toLocaleDateString(undefined, { weekday: 'short' }) === day);
+      return entry ? moodMap[entry.mood] || 0 : 0;
     });
     return {
       labels: days,
-      datasets: [
-        {
-          label: "Mood Level",
-          data: dayMoods,
-          fill: false,
-          borderColor: "#34d399",
-          backgroundColor: "#a7f3d0",
-          tension: 0.4,
-          pointRadius: 6,
-          pointBackgroundColor: "#6366f1",
-        },
-      ],
+      datasets: [{
+        label: "Wellness Level",
+        data: dayMoods,
+        borderColor: "#6366f1",
+        backgroundColor: "rgba(99, 102, 241, 0.1)",
+        tension: 0.5,
+        fill: true,
+        pointRadius: 6,
+        pointBackgroundColor: "#fff",
+        pointBorderWidth: 4,
+        pointBorderColor: "#6366f1"
+      }],
     };
   })();
 
   const chartOptions = {
     responsive: true,
-    plugins: {
-      legend: { display: false },
-      title: { display: true, text: "Mood Trend (Last 7 Days)", color: "#059669", font: { size: 18 } },
-      tooltip: { callbacks: { label: (ctx) => {
-        const val = ctx.parsed.y;
-        return ["Angry", "Sad", "Stressed", "Relaxed", "Happy"][val-1] || "No Data";
-      } } },
-    },
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
     scales: {
-      y: {
-        min: 1,
-        max: 5,
-        ticks: {
-          stepSize: 1,
-          callback: (v) => ["Angry", "Sad", "Stressed", "Relaxed", "Happy"][v-1],
-          color: "#059669",
-        },
-        grid: { color: "#d1fae5" },
-      },
-      x: {
-        grid: { color: "#d1fae5" },
-        ticks: { color: "#059669" },
-      },
-    },
-    animation: { duration: 1200, easing: "easeOutQuart" },
+      y: { min: 0, max: 6, display: false },
+      x: { grid: { display: false }, ticks: { font: { weight: 'bold' }, color: '#94a3b8' } }
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 flex items-center justify-center px-2 py-8">
-      <motion.div
-        className="w-full max-w-2xl mx-auto bg-white/60 dark:bg-gray-900/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-green-200/40"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        <motion.h1
-          className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 mb-8 drop-shadow-lg text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          Mood Tracker
-        </motion.h1>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] pt-10 pb-20 px-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10">
 
-        <motion.div
-          className="mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <p className="text-lg font-semibold mb-3 text-gray-700 dark:text-gray-200 text-center">How do you feel today?</p>
-          <div className="flex gap-4 justify-center">
-            {moods.map((item) => (
-              <motion.button
-                key={item.mood}
-                whileHover={{ scale: 1.2, rotate: -10 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedMood(item.mood)}
-                className={`text-4xl px-5 py-3 rounded-full shadow-lg transition-all font-bold border-2 ${
-                  selectedMood === item.mood
-                    ? "bg-gradient-to-r from-green-400 to-blue-400 text-white border-green-400"
-                    : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200"
-                }`}
-                style={{ minWidth: 70 }}
-              >
-                {item.emoji}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+        {/* Input Column */}
+        <div className="lg:col-span-3 space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl shadow-indigo-500/5 border border-slate-100 dark:border-slate-800"
+          >
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Mood Sanctuary</h1>
+            <p className="text-slate-500 font-medium mb-10 italic">"Your feelings are valid. Let's capture the essence of your day."</p>
 
-        {/* Motivational Tip Card + AI Suggestion */}
-        {selectedMood && (
-          <>
-            <motion.div
-              className="mb-4 flex items-center justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="max-w-md w-full bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-xl shadow-lg p-4 border border-green-300 dark:border-green-700 text-center">
-                <div className="text-2xl mb-2">{emoji(selectedMood)} {selectedMood}</div>
-                <div className="text-lg font-medium text-gray-700 dark:text-gray-200">{moodTips[selectedMood]}</div>
-              </div>
-            </motion.div>
-            <motion.div
-              className="mb-6 flex items-center justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              <div className="max-w-md w-full bg-gradient-to-r from-blue-100 via-green-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow p-3 border border-blue-200 dark:border-blue-700 text-center">
-                <div className="text-base font-semibold text-blue-700 dark:text-blue-300">AI Suggestion:</div>
-                <div className="text-md text-gray-700 dark:text-gray-200 mt-1">{aiSuggestions[selectedMood]}</div>
-              </div>
-            </motion.div>
-          </>
-        )}
-
-        <motion.textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Why do you feel this way? (optional)"
-          className="w-full h-24 mt-3 p-3 rounded-xl border-2 border-green-200 dark:border-green-700 bg-white/80 dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        />
-
-        <motion.button
-          onClick={handleSubmit}
-          disabled={!selectedMood || loading}
-          className="mt-6 w-full py-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold shadow-xl hover:from-green-600 hover:to-blue-600 transition-all duration-200 disabled:opacity-50 text-lg"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /></svg>
-              Saving...
-            </span>
-          ) : (
-            "Submit Mood"
-          )}
-        </motion.button>
-
-        {/* Animated Mood Chart */}
-        <motion.div
-          className="mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          {chartData ? (
-            <div className="bg-white/80 dark:bg-gray-800 rounded-2xl shadow p-4 border border-green-100 dark:border-green-700">
-              <LineChart data={chartData} options={chartOptions} />
-            </div>
-          ) : (
-            <p className="italic text-gray-500 text-center">No mood data for chart</p>
-          )}
-        </motion.div>
-
-        <motion.div
-          className="mt-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-300 text-center">Your Mood History</h2>
-          {moodHistory.length === 0 ? (
-            <p className="italic text-gray-500 text-center">No moods yet</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {moodHistory.map((entry) => (
-                <motion.div
-                  key={entry._id}
-                  className="flex items-center gap-4 bg-white/80 dark:bg-gray-800 rounded-xl shadow p-4 border border-green-100 dark:border-green-700"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+            <div className="grid grid-cols-5 gap-4 mb-10">
+              {moods.map((item) => (
+                <button
+                  key={item.mood}
+                  onClick={() => setSelectedMood(item.mood)}
+                  className={`flex flex-col items-center gap-2 group transition-all ${selectedMood === item.mood ? 'scale-110' : 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0'}`}
                 >
-                  <span className="text-3xl">{emoji(entry.mood)}</span>
-                  <div className="flex-1">
-                    <div className="font-semibold text-green-700 dark:text-green-300">{entry.mood}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{new Date(entry.createdAt).toLocaleString()}</div>
-                    {entry.note && (
-                      <div className="mt-1 text-gray-700 dark:text-gray-200 italic">{entry.note}</div>
-                    )}
+                  <div className={`w-14 h-14 md:w-20 md:h-20 flex items-center justify-center text-3xl md:text-5xl rounded-3xl bg-gradient-to-br ${item.color} shadow-lg transition-transform group-active:scale-90`}>
+                    {item.emoji}
                   </div>
-                </motion.div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{item.label}</span>
+                </button>
               ))}
             </div>
-          )}
-        </motion.div>
-      </motion.div>
+
+            <AnimatePresence>
+              {selectedMood && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-6 pt-6 border-t border-slate-100 dark:border-slate-800"
+                >
+                  <div className="bg-indigo-50 dark:bg-indigo-500/10 p-6 rounded-[2rem] border border-indigo-100 dark:border-indigo-500/20">
+                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 mb-2">Inner Guidance</h4>
+                    <p className="text-slate-700 dark:text-slate-200 font-bold leading-relaxed">{aiSuggestions[selectedMood]}</p>
+                  </div>
+
+                  <textarea
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2rem] border-2 border-transparent focus:border-indigo-400 outline-none font-bold text-slate-700 dark:text-white transition-all placeholder:text-slate-400"
+                    rows="4"
+                    placeholder="Pour your thoughts here... what triggered this feeling?"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                  />
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black shadow-xl shadow-indigo-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center"
+                  >
+                    {loading ? <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin" /> : "Save to My Journey"}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Trend Chart */}
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Wellness Trend</h3>
+              <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest">Live Updates</span>
+            </div>
+            <div className="h-64">
+              {chartData && <LineChart data={chartData} options={chartOptions} />}
+            </div>
+          </div>
+        </div>
+
+        {/* Journey Timeline Column */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="sticky top-32">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-6 ml-4">Journey Timeline</h2>
+            <div className="space-y-4 max-h-[800px] overflow-y-auto pr-4 custom-scrollbar">
+              {moodHistory.map((entry, idx) => (
+                <motion.div
+                  key={entry._id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm relative group overflow-hidden"
+                >
+                  <div className={`absolute top-0 left-0 w-2 h-full bg-gradient-to-b ${moods.find(m => m.mood === entry.mood)?.color || 'from-slate-200 to-slate-400'}`} />
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-3xl">{moods.find(m => m.mood === entry.mood)?.emoji}</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      {new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-black text-slate-900 dark:text-white leading-tight">{entry.mood}</h4>
+                  {entry.note && <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 font-medium italic leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all">"{entry.note}"</p>}
+                </motion.div>
+              ))}
+              {moodHistory.length === 0 && (
+                <div className="p-20 text-center bg-slate-100 dark:bg-slate-800/50 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-700">
+                  <p className="text-slate-400 font-bold italic">Your history is a blank canvas. Start today.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

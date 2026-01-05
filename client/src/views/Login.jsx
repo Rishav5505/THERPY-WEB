@@ -11,9 +11,9 @@ const Login = () => {
     try {
       const res = await axios.post("/auth/login", form);
 
-      // ✅ Save token and user info in localStorage
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // ✅ Save token and user info in sessionStorage (Tab-specific)
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("user", JSON.stringify(res.data.user));
 
       // ✅ Navigate based on role
       if (res.data.user.role === "therapist") navigate("/therapist");

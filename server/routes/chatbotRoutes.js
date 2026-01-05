@@ -3,34 +3,76 @@ const router = express.Router();
 
 // Simple chatbot logic (replace with AI logic if needed)
 
-router.post("/", (req, res) => {
-  const { message } = req.body;
-  let reply = "I am here to help!";
+const axios = require("axios");
 
-  if (message) {
-    const msg = message.toLowerCase();
-    if (msg.includes("sad") || msg.includes("depressed") || msg.includes("down")) {
-      reply = "I'm sorry you're feeling this way. Remember, it's okay to ask for help. Would you like some self-help tips or to talk to a therapist?";
-    } else if (msg.includes("happy") || msg.includes("good") || msg.includes("great")) {
-      reply = "That's wonderful! Keep focusing on what makes you feel good. Want to share what's making you happy?";
-    } else if (msg.includes("anxious") || msg.includes("anxiety") || msg.includes("nervous")) {
-      reply = "Anxiety can be tough. Try some deep breathing or check our Self-Help Library for relaxation exercises.";
-    } else if (msg.includes("help") || msg.includes("support") || msg.includes("emergency")) {
-      reply = "If you need urgent help, please use the Emergency section. For general support, you can book a session or try our community forum.";
-    } else if (msg.includes("book") || msg.includes("appointment") || msg.includes("therapist")) {
-      reply = "You can book a therapy session from the Book Therapy section. Would you like the link?";
-    } else if (msg.includes("stress") || msg.includes("tired") || msg.includes("burnout")) {
-      reply = "Stress is common. Try taking a short break, or explore our Self-Help Library for stress relief tips.";
-    } else if (msg.includes("thank")) {
-      reply = "You're welcome! I'm always here to support you.";
-    } else if (msg.includes("bye") || msg.includes("goodbye")) {
-      reply = "Take care! Remember, you can chat with me anytime.";
-    } else {
-      reply = "Thank you for sharing. Would you like some self-help resources, or to talk to a professional?";
-    }
+// 🤖 AI Chatbot with Hugging Face & Hinglish Support
+router.post("/", async (req, res) => {
+  const { message } = req.body;
+  const apiKey = process.env.HUGGINGFACE_API_KEY;
+  if (!apiKey) {
+    console.warn("⚠️ HUGGINGFACE_API_KEY is missing in .env");
+  } else {
+    console.log(`🔑 API Key found: ${apiKey.substring(0, 4)}...`);
   }
 
-  res.json({ reply });
+  if (!message) {
+    return res.status(400).json({ reply: "Please provide a message." });
+  }
+
+  console.log(`🤖 AI Request for: "${message}"`);
+
+  try {
+    // 🧠 OpenAI-compatible request to Hugging Face Router
+    const response = await axios.post(
+      "https://router.huggingface.co/v1/chat/completions",
+      {
+        model: "microsoft/Phi-3-mini-4k-instruct",
+        messages: [
+          {
+            role: "system",
+            content: "You are MindMend AI, a supportive and empathetic mental health companion. Respond in a mix of Hindi and English (Hinglish). Use a warm, caring tone. Provide support for stress, anxiety, and general wellness. If someone is in crisis, advise professional help."
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ],
+        max_tokens: 300,
+        temperature: 0.7
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        timeout: 60000
+      }
+    );
+
+    let reply = response.data.choices[0]?.message?.content || "Shukriya share karne ke liye. Main abhi thoda slow respond kar raha hoon, par main hamesha aapke saath hoon.";
+
+    res.json({ reply: reply.trim() });
+  } catch (err) {
+    if (err.response) {
+      console.error("❌ Hugging Face API Error Data:", JSON.stringify(err.response.data, null, 2));
+    } else {
+      console.error("❌ Chatbot Error:", err.message);
+    }
+
+    // FALLBACK LOGIC (same as previous Hinglish logic) if API fails
+    let fallbackReply = "Main sun raha hoon. Aap kaisa feel kar rahe hain?";
+    const msg = message.toLowerCase();
+
+    if (msg.includes("sad") || msg.includes("dukhi") || msg.includes("man nahi")) {
+      fallbackReply = "I'm sorry ki aap aisa feel kar rahe hain. Sad feel karna normal hai, par please yaad rakhein ki help available hai. Kya aap kisi professional se baat karna chahenge?";
+    } else if (msg.includes("anxious") || msg.includes("tension") || msg.includes("ghabrahat")) {
+      fallbackReply = "Tension aur anxiety bohot uncomfortable ho sakti hai. 🧘‍♂️ Lambi saans lein (Deep breathing).";
+    } else {
+      fallbackReply = "Thank you share karne ke liye. Mere server me thodi dikkat hai, par aap mujhse Hinglish me baat karte rahein!";
+    }
+
+    res.json({ reply: fallbackReply });
+  }
 });
 
 module.exports = router;

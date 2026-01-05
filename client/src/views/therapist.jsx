@@ -5,7 +5,7 @@ const TherapistDashboard = () => {
   const [therapistName, setTherapistName] = useState("");
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);
       if (user && user.name) {

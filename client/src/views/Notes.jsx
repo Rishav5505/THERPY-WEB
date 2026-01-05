@@ -8,13 +8,13 @@ const Notes = () => {
     note: "",
   });
   const [patients, setPatients] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user")); // therapist
+  const user = JSON.parse(sessionStorage.getItem("user")); // therapist
 
   // Fetch therapist's patients for dropdown
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-    const res = await axios.get(`/patients/by-therapist/${user._id}`);
+        const res = await axios.get(`/patients/by-therapist/${user._id}`);
         setPatients(res.data);
       } catch (err) {
         setPatients([]);
@@ -26,7 +26,7 @@ const Notes = () => {
   // Fetch notes
   const fetchNotes = async () => {
     try {
-  const res = await axios.get("/session-notes");
+      const res = await axios.get("/session-notes");
       setNotes(res.data);
     } catch (error) {
       setNotes([]);
@@ -43,7 +43,7 @@ const Notes = () => {
       return alert("All fields are required.");
     }
     try {
-  await axios.post("/session-notes", newNote);
+      await axios.post("/session-notes", newNote);
       setNewNote({ patientId: "", note: "" });
       fetchNotes();
     } catch (error) {

@@ -6,7 +6,7 @@ export default function ManagePatients() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const therapistId = localStorage.getItem("therapistId");
+    const therapistId = sessionStorage.getItem("therapistId");
     console.log("➡ Therapist ID:", therapistId);
 
     if (!therapistId) {
@@ -15,7 +15,8 @@ export default function ManagePatients() {
       return;
     }
 
-  fetch(`https://mind-mend-final-backend.onrender.com/api/patients/by-therapist/${therapistId}`)
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "https://mind-mend-final-backend.onrender.com/api";
+    fetch(`${baseUrl}/patients/by-therapist/${therapistId}`)
       .then((res) => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();

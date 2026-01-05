@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://mind-mend-final-backend.onrender.com/api", // 👈 Render backend URL
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://mind-mend-final-backend.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,7 +11,7 @@ const instance = axios.create({
 // ✅ Automatically add JWT token to every request
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // 👈 token le localStorage se
+    const token = sessionStorage.getItem("token"); // 👈 token le sessionStorage se
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`; // 👈 Header me token daal
     }

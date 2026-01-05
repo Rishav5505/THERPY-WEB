@@ -1,169 +1,120 @@
-import { motion } from "framer-motion"; // For animations
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-import React, { useState, useEffect } from "react";
 const Services = () => {
   const navigate = useNavigate();
-  // Local theme state for this page
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-  const bgClass = theme === "dark"
-    ? "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"
-    : "bg-gradient-to-r from-indigo-100 via-purple-100 to-indigo-200";
-  const cardBase = theme === "dark"
-    ? "bg-gray-900 text-gray-100 border border-gray-700 hover:bg-gray-800"
-    : "bg-white text-gray-800 hover:bg-purple-50";
-  const cardBlue = theme === "dark" ? "hover:bg-blue-900" : "hover:bg-blue-50";
-  const cardGreen = theme === "dark" ? "hover:bg-green-900" : "hover:bg-green-50";
-  const cardRed = theme === "dark" ? "hover:bg-red-900" : "hover:bg-red-50";
-  const cardYellow = theme === "dark" ? "hover:bg-yellow-900" : "hover:bg-yellow-50";
-  const cardTeal = theme === "dark" ? "hover:bg-teal-900" : "hover:bg-teal-50";
-  const themeIcon = theme === "dark"
-    ? <span className="text-4xl">🌙</span>
-    : <span className="text-4xl">☀️</span>;
+
+  const services = [
+    {
+      title: "1:1 Counseling",
+      desc: "Connect with licensed therapists for private, insightful sessions tailored to your emotional needs.",
+      icon: "🧘‍♂️",
+      path: "/patient/book",
+      color: "from-indigo-500 to-indigo-700"
+    },
+    {
+      title: "Mood Tracking",
+      desc: "Use AI to visualize your emotional journey and discover patterns you never knew existed.",
+      icon: "📊",
+      path: "/patient/mood",
+      color: "from-purple-500 to-purple-700"
+    },
+    {
+      title: "Resource Library",
+      desc: "Curated collection of videos, articles, and exercises to help you build resilience and peace.",
+      icon: "📘",
+      path: "/patient/selfhelp",
+      color: "from-rose-500 to-rose-700"
+    },
+    {
+      title: "Supportive Forum",
+      desc: "A safe, moderated space to share your story and find strength in a community of peers.",
+      icon: "🤝",
+      path: "/patient/forum",
+      color: "from-emerald-500 to-emerald-700"
+    },
+    {
+      title: "AI Companion",
+      desc: "An intelligent chatbot available 24/7 to listen, support, and guide you through tough moments.",
+      icon: "🤖",
+      path: "/patient/chatbot",
+      color: "from-cyan-500 to-cyan-700"
+    },
+    {
+      title: "Crisis Support",
+      desc: "Immediate access to emergency resources and professional contacts when you need them most.",
+      icon: "🚨",
+      path: "/patient/emergency",
+      color: "from-red-500 to-red-700"
+    }
+  ];
+
   return (
-    <div className={`${bgClass} py-12`}>
-      <div className="max-w-screen-xl mx-auto text-center px-6">
-        <motion.h2
-          className={`text-4xl font-bold mb-10 ${theme === "dark" ? "text-purple-300" : "text-purple-700"}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          Our Services
-        </motion.h2>
-
-  {/* Services Grid */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-          {/* 1:1 Counseling */}
-          <motion.div
-            className={`${cardBase} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-            onClick={() => navigate("/patient/book")}
-            title="Book 1:1 Counseling"
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f1a] pt-32 pb-20 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 dark:text-white mb-6"
           >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-purple-900" : "bg-purple-100"}`}>
-              <i className={`fas fa-user-md text-4xl ${theme === "dark" ? "text-purple-300" : "text-purple-700"}`}></i>
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-purple-200" : "text-purple-800"}`}>1:1 Counseling</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Talk with licensed therapists privately online and get mental clarity.</p>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>Expert therapists available anytime for mental clarity, stress management, and emotional support.</p>
-          </motion.div>
-
-          {/* Mood Tracker */}
-          <motion.div
-            className={`${cardBase} ${cardBlue} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.7 }}
-            onClick={() => navigate("/patient/mood")}
-            title="Track Your Mood"
-          >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-blue-900" : "bg-blue-100"}`}>
-              <i className={`fas fa-chart-line text-4xl ${theme === "dark" ? "text-blue-300" : "text-blue-700"}`}></i>
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-blue-200" : "text-blue-800"}`}>Mood Tracker</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Monitor your daily mood patterns and emotional trends over time.</p>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>Track mood fluctuations, emotional trends, and mental health insights over time with AI-driven analytics.</p>
-          </motion.div>
-
-          {/* Meditation Guide */}
-          <motion.div
-            className={`${cardBase} ${cardGreen} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.9 }}
-            onClick={() => navigate("/patient/selfhelp")}
-            title="Open Meditation Guide"
-          >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-green-900" : "bg-green-100"}`}>
-              <i className={`fas fa-spa text-4xl ${theme === "dark" ? "text-green-300" : "text-green-700"}`}></i>
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-green-200" : "text-green-800"}`}>Meditation Guide</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Access guided meditation and mindfulness exercises anytime.</p>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>Relax your mind and body through guided meditation, breathing exercises, and mindfulness practices.</p>
-          </motion.div>
-
-          {/* Video Therapy */}
-          <motion.div
-            className={`${cardBase} ${cardRed} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2 }}
-            onClick={() => navigate("/therapist/video-call")}
-            title="Start Video Therapy"
-          >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-red-900" : "bg-red-100"}`}>
-              <i className={`fas fa-video text-4xl ${theme === "dark" ? "text-red-300" : "text-red-700"}`}></i>
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-red-200" : "text-red-800"}`}>Video Therapy</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Engage in real-time video sessions with your therapist for a more personalized experience.</p>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>Talk face-to-face with certified therapists through secure video calls.</p>
-          </motion.div>
-
-          {/* Support Groups */}
-          <motion.div
-            className={`${cardBase} ${cardYellow} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2.2 }}
-            onClick={() => navigate("/patient/forum")}
-            title="Join Support Groups"
-          >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-yellow-900" : "bg-yellow-100"}`}>
-              <i className={`fas fa-users text-4xl ${theme === "dark" ? "text-yellow-300" : "text-yellow-700"}`}></i>
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-yellow-200" : "text-yellow-800"}`}>Support Groups</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Join anonymous support groups and connect with peers facing similar challenges.</p>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>Access moderated forums where you can share experiences, advice, and support.</p>
-          </motion.div>
-
-          {/* Wellness Tips */}
-          <motion.div
-            className={`${cardBase} ${cardTeal} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2.4 }}
-            onClick={() => navigate("/patient/selfhelp")}
-            title="Get Wellness Tips"
-          >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-teal-900" : "bg-teal-100"}`}>
-              <i className={`fas fa-balance-scale text-4xl ${theme === "dark" ? "text-teal-300" : "text-teal-700"}`}></i>
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-teal-200" : "text-teal-800"}`}>Wellness Tips</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Get personalized wellness tips based on your mood and behavior patterns.</p>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>Receive daily wellness suggestions, including relaxation techniques and self-care practices.</p>
-          </motion.div>
-
-          {/* Theme Switcher Card */}
-          <motion.div
-            className={`${cardBase} p-8 rounded-xl shadow-lg text-center transform transition-transform hover:scale-105 hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2.6 }}
-            title="Switch Theme"
-          >
-            <div className={`p-4 rounded-full mb-4 inline-block ${theme === "dark" ? "bg-gray-800" : "bg-yellow-100"}`}>
-              {themeIcon}
-            </div>
-            <h3 className={`text-2xl font-semibold mb-3 ${theme === "dark" ? "text-yellow-200" : "text-yellow-700"}`}>Theme Switcher</h3>
-            <p className={`mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Toggle between Light and Dark mode for a personalized experience.</p>
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className={`mt-2 px-6 py-3 rounded-full border-2 font-bold shadow-sm transition-all flex items-center gap-2 ${theme === "dark" ? "bg-gray-800 border-yellow-400 text-yellow-200 hover:bg-gray-700" : "bg-white border-yellow-300 text-yellow-700 hover:bg-yellow-100"}`}
-              style={{ fontSize: "1.1rem" }}
-            >
-              {theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            </button>
-          </motion.div>
+            Nurturing <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Your Mind</span>
+          </motion.h1>
+          <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">
+            Explore our comprehensive suite of mental wellness tools designed to support you at every stage of your journey.
+          </p>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map((service, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10 }}
+              onClick={() => navigate(service.path)}
+              className="group cursor-pointer"
+            >
+              <div className="h-full bg-white dark:bg-slate-900/50 p-10 rounded-[2.5rem] shadow-2xl shadow-indigo-500/5 border border-slate-100 dark:border-slate-800 transition-all hover:shadow-indigo-500/10 hover:border-indigo-200 dark:hover:border-indigo-500/30">
+                <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform shadow-lg`}>
+                  {service.icon}
+                </div>
+                <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-4 group-hover:text-indigo-600 transition-colors">
+                  {service.title}
+                </h3>
+                <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                  {service.desc}
+                </p>
+                <div className="mt-8 flex items-center gap-2 text-indigo-600 font-black text-sm uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                  Learn More <span>→</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Commitment Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="mt-32 p-12 bg-slate-900 dark:bg-indigo-600 rounded-[3rem] text-center text-white overflow-hidden relative"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -ml-32 -mb-32" />
+
+          <h2 className="text-4xl font-black mb-6 relative z-10">Our Commitment to You</h2>
+          <p className="text-xl text-indigo-100 max-w-3xl mx-auto font-medium relative z-10 mb-10">
+            "Your privacy, safety, and comfort are our top priorities. Every tool we build is designed with deep empathy and scientific backing to ensure you get the best support possible."
+          </p>
+          <button
+            onClick={() => navigate("/contact")}
+            className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black hover:scale-105 transition-transform shadow-xl relative z-10"
+          >
+            Speak to an Expert
+          </button>
+        </motion.div>
       </div>
     </div>
   );
