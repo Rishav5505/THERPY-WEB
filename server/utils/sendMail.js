@@ -9,11 +9,15 @@ const sendMail = async ({ to, subject, text }) => {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
     port: parseInt(process.env.SMTP_PORT || "587"),
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
+    // ⚡ Fail fast if connection hangs (fixes "Processing..." stuck issue)
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 5000,    // 5 seconds 
+    socketTimeout: 10000,     // 10 seconds
   });
 
   const mailOptions = {
