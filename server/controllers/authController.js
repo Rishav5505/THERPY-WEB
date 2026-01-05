@@ -52,17 +52,19 @@ exports.signup = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword, role, otp, otpVerified: false });
     await newUser.save();
 
-    let emailSent = true;
-    try {
-      await sendMail({
-        to: email,
-        subject: "MindMend Signup OTP",
-        text: `Your OTP for MindMend signup is: ${otp}`,
-      });
-    } catch (mailError) {
-      console.error("❌ Mail sending failed:", mailError.message);
-      emailSent = false;
-    }
+    // ⚡ NON-BLOCKING EMAIL SEND (Fire and Forget) to prevent UI hang
+    // We start the email process but don't wait for it to finish before responding
+    // This solves the render timeout issue immediately.
+    sendMail({
+      to: email,
+      subject: "MindMend Signup OTP",
+      text: `Your OTP for MindMend signup is: ${otp}`,
+    }).catch(err => console.error("Email send failed in background:", err.message));
+
+    // Assume sent or failed, we return immediately.
+    // We ALWAYS send debugOtp to frontend now so user is not stuck.
+    const emailSent = false; // Force frontend to show fallback alert
+
 
     res.status(201).json({
       message: emailSent
