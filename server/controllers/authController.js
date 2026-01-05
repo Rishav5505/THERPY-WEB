@@ -27,8 +27,9 @@ exports.signup = async (req, res) => {
         // ⚡ NON-BLOCKING (Fire & Forget) for retry flow too
         sendMail({
           to: email,
-          subject: "MindMend Signup OTP (Resent)",
-          text: `Your OTP for MindMend signup is: ${otp}`,
+          subject: "Your MindMend Verification Code",
+          text: `Welcome back to MindMend! Your verification code is: ${otp}. This code will expire in 10 minutes. If you didn't request this, please ignore this email.`,
+          otp: otp,
         }).catch(err => console.error("Resend email failed:", err.message));
 
         return res.status(200).json({
@@ -51,8 +52,9 @@ exports.signup = async (req, res) => {
     // This solves the render timeout issue immediately.
     sendMail({
       to: email,
-      subject: "MindMend Signup OTP",
-      text: `Your OTP for MindMend signup is: ${otp}`,
+      subject: "Your MindMend Verification Code",
+      text: `Welcome to MindMend! Your verification code is: ${otp}. This code will expire in 10 minutes. Please enter this code to complete your registration.`,
+      otp: otp,
     }).catch(err => console.error("Email send failed in background:", err.message));
 
     // Assume sent or failed, we return immediately.
@@ -160,8 +162,9 @@ exports.resendOtp = async (req, res) => {
     // ⚡ NON-BLOCKING
     sendMail({
       to: email,
-      subject: "MindMend OTP (Resent)",
-      text: `Your new OTP is: ${otp}`,
+      subject: "Your MindMend Verification Code",
+      text: `Your new verification code is: ${otp}. This code will expire in 10 minutes. Please enter this code to verify your account.`,
+      otp: otp,
     }).catch(err => console.error("Resend OTP failed:", err.message));
 
     // Always return debugOtp for immediate UI feedback
@@ -189,8 +192,9 @@ exports.forgotPassword = async (req, res) => {
     // ⚡ NON-BLOCKING
     sendMail({
       to: email,
-      subject: "MindMend Password Reset OTP",
-      text: `Your OTP for password reset is: ${otp}`,
+      subject: "Your MindMend Password Reset Code",
+      text: `You requested to reset your password. Your verification code is: ${otp}. This code will expire in 10 minutes. If you didn't request this, please ignore this email and your password will remain unchanged.`,
+      otp: otp,
     }).catch(err => console.error("Forgot password email failed:", err.message));
 
     // Always return debugOtp for immediate UI feedback
